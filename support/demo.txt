@@ -1,0 +1,25 @@
+import nodus as ndu 
+
+canvas = ndu.canvas(size)# if size not given measn full screen 
+
+ndu.canvas.columns(3)# default 1
+
+left , middle , right = ndu.canvas[0], ndu.canvas[1], ndu.canvas[2]
+
+ndu.middle.trailheading("Front-end" , font , size , weight , more...) # trail headin for the upper dots or simply heading means heading on the top
+
+ndu.middle.node("Internet", bg="yellow",Id="middle_2")
+
+
+
+right_block_1 = nud.right.block()
+ndu.right_block_1.heading("HEADING")
+ndu.right_block_1.text("")
+ndu.right_block_1.button("")
+
+right_block_2 = ndu.right.node_block(Id="right_2")
+ndu.right_block_2.node("how Internet works", bg ="")
+
+
+# to make connection of internent with all  the intenret block connection 
+ndu.connect("middle_2", "right_2", line="dotted, straight, curve , arrow , solid")

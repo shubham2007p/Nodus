@@ -1,0 +1,165 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+
+:root {
+    /* --- Text Colors --- */
+    /* Neutral */
+    --text-neutral-black: rgb(0, 0, 0);
+    --text-neutral-dark-gray: rgb(33, 33, 33);
+    --text-neutral-white: rgb(255, 255, 255);
+
+    /* Blues/Vibrants */
+    --text-vibrant-blue: rgb(24, 99, 220);
+    --text-vibrant-oklch-light: oklch(0.707 0.022 261.325);
+    --text-vibrant-oklch-medium: oklch(0.551 0.027 264.364);
+    --text-vibrant-oklch-dark: oklch(0.546 0.245 262.881);
+
+    /* Accents */
+    --text-accent-green: rgb(0, 128, 0);
+    --text-accent-yellow-orange: oklch(94.893% 0.2143 114.638);
+    --text-accent-brown: oklch(0.476 0.114 61.907);
+
+    /* Translucent/Experimental */
+    --text-experimental-translucent: oklab(0.869 -0.00647108 -0.0210268 / 0.6);
+
+    /* --- Background Colors --- */
+    /* Primary/Neutrals */
+    --bg-primary-white: rgb(255, 255, 255);
+    --bg-primary-off-white: rgb(244, 244, 244);
+    --bg-primary-light-gray-blue: oklch(0.985 0.002 247.839);
+
+    /* Dark Themes */
+    --bg-dark-black: rgb(0, 0, 0);
+    --bg-dark-navy-1: oklch(0.208 0.042 265.755);
+    --bg-dark-navy-2: oklch(0.21 0.034 264.665);
+    --bg-dark-navy-deep: oklch(0.13 0.028 261.692);
+
+    /* Brand/UI */
+    --bg-brand-blue: rgb(24, 99, 220);
+    --bg-brand-accent: oklch(0.852 0.199 91.936);
+
+    /* --- Border Colors --- */
+    /* Grays/Separators */
+    --border-gray-separator-1: rgb(235, 235, 235);
+    --border-gray-separator-2: rgb(244, 244, 244);
+    --border-gray-oklch: oklch(0.928 0.006 264.531);
+
+    /* Stronger Borders */
+    --border-strong-dark-gray: rgb(33, 33, 33);
+    --border-strong-black: rgb(0, 0, 0);
+    --border-strong-oklch: oklch(0.872 0.01 258.338);
+
+    /* Active States */
+    --border-active-blue: rgb(24, 99, 220);
+
+    /* --- Canvas Color Variants --- */
+    --canvas-white: rgb(255, 255, 255);
+    --canvas-off-white: rgb(244, 244, 244);
+    --canvas-light-grey: rgb(235, 235, 235);
+    --canvas-grey-medium: oklch(0.928 0.006 264.531);
+    --canvas-grey-slate: oklch(0.985 0.002 247.839);
+    --canvas-dark-grey: rgb(33, 33, 33);
+    --canvas-black: rgb(0, 0, 0);
+    --canvas-navy-dark: oklch(0.208 0.042 265.755);
+    --canvas-navy-deep: oklch(0.13 0.028 261.692);
+
+    /* --- Typography Variables --- */
+    --font-family-system: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+    /* Headings */
+    --font-size-h1: 48px;
+    --font-weight-h1: 700;
+    --line-height-h1: 48px;
+    --color-h1: var(--text-neutral-black);
+
+    --font-size-h2-large: 17px;
+    --font-weight-h2-large: 500;
+    --line-height-h2-large: 25.5px;
+
+    --font-size-h2-small: 14px;
+    --font-weight-h2-small: 500;
+    --line-height-h2-small: 20px;
+
+    /* Paragraphs (Body Text) */
+    --font-size-p-large: 18px;
+    --font-weight-p-large: 400;
+    --line-height-p-large: 28px;
+    --color-p-large: oklch(0.551 0.027 264.364);
+
+    --font-size-p-standard: 16px;
+    --font-weight-p-standard: 400;
+    --line-height-p-standard: 26px;
+    --color-p-standard: oklch(0.278 0.033 256.848);
+
+    --font-size-p-small: 14px;
+    --font-weight-p-small: 400;
+    --line-height-p-small: 24px;
+
+    --font-size-p-tiny: 12px;
+    --font-weight-p-tiny: 400;
+    --line-height-p-tiny: 24px;
+
+    /* Links & UI Elements */
+    --font-size-link: 16px;
+    --font-weight-link: 500;
+    --line-height-link: 24px;
+
+    --font-size-link-accent: 16px;
+    --font-weight-link-accent: 500;
+    --color-link-accent: oklch(0.852 0.199 91.936);
+
+    --font-size-badge: 12px;
+    --font-weight-badge: 600;
+    --line-height-badge: 16px;
+
+    /* Cookie Consent */
+    --font-size-cookie-title: 18px;
+    --font-weight-cookie-title: 700;
+    --font-size-cookie-body: 14px;
+    --font-weight-cookie-body: 400;
+}
+
+/* canvas  */
+
+.canvas {
+    display: grid;
+    grid-template-columns: repeat(columns, ratio);
+    gap: 10px;
+}
+
+/* Node */
+.node {
+    width: fit-content;
+    height: fit-content;
+    background-color: var(--text-accent-yellow-orange) !important;
+    border: solid 2px black;
+    font-size: var(--font-size-p-large);
+    font-family: var(--font-family-system);
+    padding: 1% 10%;
+    border-radius: 10px;
+    margin: auto;
+}
+
+/* canvas */
+#canvas_0 {
+    width: 100vw;
+    height: 100vh;
+    grid-template-columns: repeat(1, 1fr);
+    background-color: var(--canvas-white);
+} 
+ #node_0 {
+    background-color: var(--bg-brand-accent);
+}
+
+#node_1 {
+    background-color: var(--bg-brand-accent);
+}
+
+#node_2 {
+    background-color: var(--bg-brand-accent);
+}
+
+/* canvas user */
