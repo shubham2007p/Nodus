@@ -1,56 +1,56 @@
-﻿// Nodus Todo - Desktop Application State & Logic
+// Nodus Desktop - High Craft Minimalist Task Management
+// Precision keyboard navigation, zero artificial bloat, local state persistence
 
 const DEFAULT_CATEGORIES = [
-  { id: 'cat-work', name: 'Work', color: '#38bdf8' },
-  { id: 'cat-personal', name: 'Personal', color: '#10b981' },
-  { id: 'cat-learning', name: 'Learning', color: '#a855f7' },
-  { id: 'cat-errands', name: 'Errands', color: '#f59e0b' }
+  { id: 'cat-core', name: 'Architecture', color: '#71717a' },
+  { id: 'cat-frontend', name: 'Interface', color: '#3b82f6' },
+  { id: 'cat-ops', name: 'Systems', color: '#10b981' }
 ];
 
 const DEFAULT_TASKS = [
   {
     id: 'task-1',
-    title: 'Welcome to Nodus Desktop Todo! 👋',
+    title: 'Precision Swiss architecture & design system',
     completed: false,
     starred: true,
     priority: 'high',
-    categoryId: 'cat-work',
+    categoryId: 'cat-frontend',
     dueDate: new Date().toISOString().split('T')[0],
-    notes: 'A native-feel Windows 11 Fluent styled desktop task manager with glassmorphism, offline persistence, and seamless window controls.',
+    notes: 'Crafted with zero gradients or cartoon glow. Strict 14:1 contrast, Inter & JetBrains Mono typographic hierarchy, and vim-like keyboard navigation.',
     subtasks: [
-      { id: 'sub-1', title: 'Try minimizing and maximizing the custom titlebar', done: false },
-      { id: 'sub-2', title: 'Create your first custom task or category', done: false },
-      { id: 'sub-3', title: 'Use Ctrl+K to search your tasks anytime', done: false }
+      { id: 'sub-1', title: 'Press J / K to navigate up and down the task stream', done: true },
+      { id: 'sub-2', title: 'Press Space to toggle completion without a mouse', done: false },
+      { id: 'sub-3', title: 'Press N or / to quickly add or search tasks', done: false }
     ],
     createdAt: Date.now() - 3600000
   },
   {
     id: 'task-2',
-    title: 'Design high-converting landing page mockups',
+    title: 'Benchmark SQLite local indexing & cold start performance',
     completed: false,
     starred: false,
     priority: 'medium',
-    categoryId: 'cat-work',
+    categoryId: 'cat-core',
     dueDate: '',
-    notes: 'Draft wireframes in Figma with modern dark mode aesthetic.',
+    notes: 'Ensure instant cold start under 120ms with local schema validation.',
     subtasks: [],
     createdAt: Date.now() - 7200000
   },
   {
     id: 'task-3',
-    title: 'Daily workout & 30 min cardio',
+    title: 'Refactor IPC security boundaries in electron preload bridge',
     completed: true,
     starred: false,
     priority: 'low',
-    categoryId: 'cat-personal',
+    categoryId: 'cat-ops',
     dueDate: new Date().toISOString().split('T')[0],
-    notes: 'Stay hydrated and stretch before session.',
+    notes: 'Audit contextIsolation and nodeIntegration policies.',
     subtasks: [],
     createdAt: Date.now() - 86400000
   }
 ];
 
-class TodoApp {
+class NodusApp {
   constructor() {
     this.tasks = this.load('nodus_tasks', DEFAULT_TASKS);
     this.categories = this.load('nodus_categories', DEFAULT_CATEGORIES);
@@ -61,10 +61,12 @@ class TodoApp {
     this.sortBy = 'created-desc';
     this.selectedTaskId = null;
     this.quickPriority = 'normal';
+    this.selectedIndex = 0;
 
     this.initWindowControls();
     this.initDOMElements();
     this.bindEvents();
+    this.bindKeyboardShortcuts();
     this.render();
   }
 
@@ -82,7 +84,7 @@ class TodoApp {
     localStorage.setItem('nodus_categories', JSON.stringify(this.categories));
   }
 
-  /* ================= Window Controls ================= */
+  /* ================= Window Chrome Controls ================= */
   initWindowControls() {
     const btnMin = document.getElementById('btn-minimize');
     const btnMax = document.getElementById('btn-maximize');
@@ -105,8 +107,7 @@ class TodoApp {
         }
       });
     } else {
-      // Browser fallback
-      btnMin?.addEventListener('click', () => console.log('Minimize window'));
+      btnMin?.addEventListener('click', () => console.log('Minimize'));
       btnMax?.addEventListener('click', () => {
         if (!document.fullscreenElement) {
           document.documentElement.requestFullscreen().catch(() => {});
@@ -118,7 +119,7 @@ class TodoApp {
     }
   }
 
-  /* ================= DOM Element Caching ================= */
+  /* ================= Cache DOM ================= */
   initDOMElements() {
     this.taskListEl = document.getElementById('tasks-list');
     this.emptyStateEl = document.getElementById('empty-state');
@@ -127,14 +128,15 @@ class TodoApp {
     this.quickDueDate = document.getElementById('quick-due-date');
     this.quickCatSelect = document.getElementById('quick-category-select');
     this.quickPriorityBtn = document.getElementById('toggle-quick-priority');
+    this.quickPriorityLabel = document.getElementById('quick-priority-label');
     this.searchInput = document.getElementById('search-input');
     this.priorityFilterEl = document.getElementById('priority-filter');
     this.sortFilterEl = document.getElementById('sort-filter');
     this.viewTitleEl = document.getElementById('current-view-title');
     this.filterCounterEl = document.getElementById('task-filter-counter');
-    this.titlebarSubtitle = document.getElementById('titlebar-subtitle');
+    this.titlebarBreadcrumb = document.getElementById('titlebar-current-view');
 
-    // Detail Pane Elements
+    // Inspector Pane
     this.detailPane = document.getElementById('task-detail-pane');
     this.detailTitle = document.getElementById('detail-title');
     this.detailPriority = document.getElementById('detail-priority');
@@ -146,13 +148,114 @@ class TodoApp {
     this.newSubtaskInput = document.getElementById('new-subtask-input');
     this.detailCreatedAt = document.getElementById('detail-created-at');
 
-    // Category Modal
+    // Modal
     this.catModal = document.getElementById('category-modal');
     this.newCatName = document.getElementById('new-cat-name');
-    this.selectedCatColor = '#38bdf8';
+    this.selectedCatColor = '#71717a';
   }
 
-  /* ================= Event Listeners ================= */
+  /* ================= Keyboard Shortcuts (Vim / Desktop First) ================= */
+  bindKeyboardShortcuts() {
+    window.addEventListener('keydown', (e) => {
+      const activeEl = document.activeElement;
+      const isInputFocused = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+
+      // Esc closes inspector or modal
+      if (e.key === 'Escape') {
+        if (!this.catModal?.classList.contains('hidden')) {
+          this.catModal?.classList.add('hidden');
+          return;
+        }
+        if (!this.detailPane?.classList.contains('collapsed')) {
+          this.closeDetailPane();
+          return;
+        }
+        if (isInputFocused) {
+          activeEl.blur();
+          return;
+        }
+      }
+
+      // If typing in input, let default typing happen except for specific shortcuts
+      if (isInputFocused) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+          e.preventDefault();
+          this.searchInput?.focus();
+        }
+        return;
+      }
+
+      // Fast Focus Search
+      if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
+        e.preventDefault();
+        this.searchInput?.focus();
+        this.searchInput?.select();
+        return;
+      }
+
+      // Quick Add Trigger
+      if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        this.quickInput?.focus();
+        return;
+      }
+
+      const tasks = this.getFilteredTasks();
+      if (tasks.length === 0) return;
+
+      // J / Down Arrow: Move down
+      if (e.key.toLowerCase() === 'j' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        this.selectedIndex = Math.min(this.selectedIndex + 1, tasks.length - 1);
+        this.selectTask(tasks[this.selectedIndex].id, false);
+      }
+
+      // K / Up Arrow: Move up
+      if (e.key.toLowerCase() === 'k' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
+        this.selectTask(tasks[this.selectedIndex].id, false);
+      }
+
+      // Space: Toggle active task completion
+      if (e.code === 'Space') {
+        e.preventDefault();
+        const activeTask = tasks[this.selectedIndex];
+        if (activeTask) this.toggleTaskCompleted(activeTask.id);
+      }
+
+      // S: Toggle Star
+      if (e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        const activeTask = tasks[this.selectedIndex];
+        if (activeTask) this.toggleTaskStarred(activeTask.id);
+      }
+
+      // E or Enter: Open inspector for selected task
+      if (e.key.toLowerCase() === 'e' || e.key === 'Enter') {
+        e.preventDefault();
+        const activeTask = tasks[this.selectedIndex];
+        if (activeTask) {
+          this.selectTask(activeTask.id, true);
+          this.detailTitle?.focus();
+        }
+      }
+
+      // Delete or Backspace (when not in input): Delete active task
+      if (e.key === 'Delete' || (e.key === 'Backspace' && !isInputFocused)) {
+        e.preventDefault();
+        const activeTask = tasks[this.selectedIndex];
+        if (activeTask) {
+          this.tasks = this.tasks.filter(t => t.id !== activeTask.id);
+          this.save();
+          this.selectedIndex = Math.max(0, this.selectedIndex - 1);
+          this.render();
+        }
+      }
+    });
+  }
+
+  /* ================= Standard Event Listeners ================= */
   bindEvents() {
     // Quick Add
     document.getElementById('btn-quick-add')?.addEventListener('click', () => this.addQuickTask());
@@ -160,7 +263,7 @@ class TodoApp {
       if (e.key === 'Enter') this.addQuickTask();
     });
 
-    // Quick Priority Toggle
+    // Priority Cycle
     this.quickPriorityBtn?.addEventListener('click', () => {
       const order = ['normal', 'medium', 'high'];
       const next = order[(order.indexOf(this.quickPriority) + 1) % order.length];
@@ -168,43 +271,36 @@ class TodoApp {
       this.updateQuickPriorityUI();
     });
 
-    // Navigation Filters
-    document.querySelectorAll('.nav-item').forEach((btn) => {
+    // Sidebar navigation
+    document.querySelectorAll('.nav-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach((b) => b.classList.remove('active'));
-        document.querySelectorAll('.cat-item').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.category-btn').forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         this.currentFilter = btn.dataset.filter;
         this.currentCategoryFilter = null;
+        this.selectedIndex = 0;
         this.render();
       });
     });
 
-    // Search & Shortcuts
+    // Search filter
     this.searchInput?.addEventListener('input', (e) => {
       this.searchQuery = e.target.value.toLowerCase().trim();
+      this.selectedIndex = 0;
       this.renderTasks();
     });
 
-    window.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        this.searchInput?.focus();
-      }
-      if (e.key === 'Escape') {
-        this.closeDetailPane();
-        this.catModal?.classList.add('hidden');
-      }
-    });
-
-    // Priority & Sort Change
+    // Priority & Sort selection
     this.priorityFilterEl?.addEventListener('change', (e) => {
       this.priorityFilter = e.target.value;
+      this.selectedIndex = 0;
       this.renderTasks();
     });
 
     this.sortFilterEl?.addEventListener('change', (e) => {
       this.sortBy = e.target.value;
+      this.selectedIndex = 0;
       this.renderTasks();
     });
 
@@ -212,10 +308,11 @@ class TodoApp {
     document.getElementById('btn-clear-completed')?.addEventListener('click', () => {
       this.tasks = this.tasks.filter((t) => !t.completed);
       this.save();
+      this.selectedIndex = 0;
       this.render();
     });
 
-    // Detail pane close & updates
+    // Inspector Events
     document.getElementById('btn-close-detail')?.addEventListener('click', () => this.closeDetailPane());
 
     this.detailTitle?.addEventListener('input', (e) => this.updateActiveTask({ title: e.target.value }));
@@ -224,24 +321,25 @@ class TodoApp {
     this.detailDueDate?.addEventListener('change', (e) => this.updateActiveTask({ dueDate: e.target.value }));
     this.detailNotes?.addEventListener('input', (e) => this.updateActiveTask({ notes: e.target.value }));
 
-    // Delete task button
+    // Delete task button in inspector
     document.getElementById('btn-delete-task')?.addEventListener('click', () => {
       if (this.selectedTaskId) {
         this.tasks = this.tasks.filter((t) => t.id !== this.selectedTaskId);
         this.selectedTaskId = null;
         this.save();
         this.closeDetailPane();
+        this.selectedIndex = Math.max(0, this.selectedIndex - 1);
         this.render();
       }
     });
 
-    // Subtasks add
+    // Subtasks
     document.getElementById('btn-add-subtask')?.addEventListener('click', () => this.addSubtask());
     this.newSubtaskInput?.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.addSubtask();
     });
 
-    // Category modal
+    // Category Modal
     document.getElementById('btn-add-category')?.addEventListener('click', () => {
       this.catModal?.classList.remove('hidden');
       this.newCatName.value = '';
@@ -254,9 +352,9 @@ class TodoApp {
       this.catModal?.classList.add('hidden');
     });
 
-    document.querySelectorAll('.color-swatch').forEach((swatch) => {
+    document.querySelectorAll('.swatch-btn').forEach((swatch) => {
       swatch.addEventListener('click', () => {
-        document.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('active'));
+        document.querySelectorAll('.swatch-btn').forEach((s) => s.classList.remove('active'));
         swatch.classList.add('active');
         this.selectedCatColor = swatch.dataset.color;
       });
@@ -276,16 +374,13 @@ class TodoApp {
       this.renderCategories();
       this.populateCategoryDropdowns();
     });
-
-    document.getElementById('btn-open-create-modal')?.addEventListener('click', () => {
-      this.quickInput?.focus();
-    });
   }
 
   updateQuickPriorityUI() {
     const label = this.quickPriority.charAt(0).toUpperCase() + this.quickPriority.slice(1);
-    this.quickPriorityBtn.innerHTML = `<span class="dot-priority ${this.quickPriority}"></span> ${label}`;
-    this.quickPriorityBtn.dataset.priority = this.quickPriority;
+    this.quickPriorityLabel.textContent = label;
+    const dot = this.quickPriorityBtn.querySelector('.priority-dot');
+    dot.className = `priority-dot ${this.quickPriority}`;
   }
 
   /* ================= Task Operations ================= */
@@ -297,7 +392,7 @@ class TodoApp {
     let categoryId = this.quickCatSelect.value || (this.categories[0] ? this.categories[0].id : '');
     let dueDate = this.quickDueDate.value;
 
-    // Smart inline parse: !high or !med or @Work
+    // Smart inline syntax
     if (title.includes('!high')) { priority = 'high'; title = title.replace('!high', '').trim(); }
     if (title.includes('!medium') || title.includes('!med')) { priority = 'medium'; title = title.replace(/!med(ium)?/, '').trim(); }
     if (title.includes('!low')) { priority = 'low'; title = title.replace('!low', '').trim(); }
@@ -326,6 +421,7 @@ class TodoApp {
 
     this.tasks.unshift(newTask);
     this.quickInput.value = '';
+    this.selectedIndex = 0;
     this.save();
     this.render();
   }
@@ -351,10 +447,16 @@ class TodoApp {
     }
   }
 
-  selectTask(id) {
+  selectTask(id, openInspector = true) {
     this.selectedTaskId = id;
+    const tasks = this.getFilteredTasks();
+    const idx = tasks.findIndex(t => t.id === id);
+    if (idx !== -1) this.selectedIndex = idx;
+
     this.renderTasks();
-    this.renderDetailPane();
+    if (openInspector) {
+      this.renderDetailPane();
+    }
   }
 
   closeDetailPane() {
@@ -413,7 +515,7 @@ class TodoApp {
     }
   }
 
-  /* ================= Rendering Logic ================= */
+  /* ================= Rendering Engine ================= */
   render() {
     this.renderCategories();
     this.populateCategoryDropdowns();
@@ -426,18 +528,19 @@ class TodoApp {
     this.categories.forEach((cat) => {
       const count = this.tasks.filter(t => t.categoryId === cat.id && !t.completed).length;
       const btn = document.createElement('button');
-      btn.className = `cat-item ${this.currentCategoryFilter === cat.id ? 'active' : ''}`;
+      btn.className = `category-btn ${this.currentCategoryFilter === cat.id ? 'active' : ''}`;
       btn.innerHTML = `
-        <span class="cat-dot" style="background: ${cat.color};"></span>
-        <span class="nav-text">${this.escapeHTML(cat.name)}</span>
-        <span class="badge">${count}</span>
+        <span class="project-dot" style="background: ${cat.color};"></span>
+        <span class="nav-label">${this.escapeHTML(cat.name)}</span>
+        <span class="nav-count">${count}</span>
       `;
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.currentCategoryFilter = cat.id;
         this.currentFilter = null;
+        this.selectedIndex = 0;
         this.render();
       });
       this.categoryListEl.appendChild(btn);
@@ -454,7 +557,6 @@ class TodoApp {
     const todayStr = new Date().toISOString().split('T')[0];
 
     return this.tasks.filter((task) => {
-      // Category filter
       if (this.currentCategoryFilter) {
         if (task.categoryId !== this.currentCategoryFilter) return false;
       } else if (this.currentFilter === 'today') {
@@ -465,12 +567,10 @@ class TodoApp {
         if (!task.completed) return false;
       }
 
-      // Priority filter
       if (this.priorityFilter !== 'all' && task.priority !== this.priorityFilter) {
         return false;
       }
 
-      // Search query
       if (this.searchQuery) {
         const titleMatch = task.title.toLowerCase().includes(this.searchQuery);
         const notesMatch = (task.notes || '').toLowerCase().includes(this.searchQuery);
@@ -497,62 +597,64 @@ class TodoApp {
   renderTasks() {
     const filtered = this.getFilteredTasks();
 
-    // Update Header
-    let title = 'All Tasks';
+    let title = 'Inbox';
     if (this.currentCategoryFilter) {
       const cat = this.categories.find(c => c.id === this.currentCategoryFilter);
-      title = cat ? cat.name : 'Category';
+      title = cat ? cat.name : 'Project';
     } else if (this.currentFilter === 'today') {
-      title = "Today's Tasks";
+      title = 'Today';
     } else if (this.currentFilter === 'starred') {
-      title = 'Priority & Starred';
+      title = 'Priority Focus';
     } else if (this.currentFilter === 'completed') {
-      title = 'Completed Tasks';
+      title = 'Completed';
     }
 
     if (this.viewTitleEl) this.viewTitleEl.textContent = title;
-    if (this.titlebarSubtitle) this.titlebarSubtitle.textContent = title;
-    if (this.filterCounterEl) this.filterCounterEl.textContent = `${filtered.length} task${filtered.length === 1 ? '' : 's'}`;
+    if (this.titlebarBreadcrumb) this.titlebarBreadcrumb.textContent = title;
+    if (this.filterCounterEl) this.filterCounterEl.textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
 
     this.taskListEl.innerHTML = '';
 
     if (filtered.length === 0) {
       this.emptyStateEl.classList.remove('hidden');
+      return;
     } else {
       this.emptyStateEl.classList.add('hidden');
     }
 
-    filtered.forEach((task) => {
+    filtered.forEach((task, index) => {
       const cat = this.categories.find(c => c.id === task.categoryId);
-      const isSelected = this.selectedTaskId === task.id;
+      const isSelected = (this.selectedTaskId === task.id) || (!this.selectedTaskId && index === this.selectedIndex);
 
-      const card = document.createElement('div');
-      card.className = `task-card ${task.completed ? 'completed' : ''} ${isSelected ? 'selected' : ''}`;
-      card.innerHTML = `
-        <div class="task-checkbox-custom" data-id="${task.id}">
-          <svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      const row = document.createElement('div');
+      row.className = `task-row ${task.completed ? 'completed' : ''} ${isSelected ? 'active-selection' : ''}`;
+      row.innerHTML = `
+        <div class="check-trigger" data-id="${task.id}" title="Toggle (Space)">
+          <svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.5 2.5 4.5-5" stroke-linecap="round"/></svg>
         </div>
-        <div class="task-body">
-          <span class="task-title">${this.escapeHTML(task.title)}</span>
-          <div class="task-meta">
-            ${cat ? `<span class="meta-tag" style="background: ${cat.color}20; color: ${cat.color};"><span class="cat-dot" style="background: ${cat.color};"></span> ${this.escapeHTML(cat.name)}</span>` : ''}
-            <span class="priority-pill ${task.priority}">${task.priority}</span>
-            ${task.dueDate ? `<span>📅 ${task.dueDate}</span>` : ''}
-            ${task.subtasks && task.subtasks.length > 0 ? `<span>☑️ ${task.subtasks.filter(s => s.done).length}/${task.subtasks.length}</span>` : ''}
-          </div>
+        <div class="task-title-cell">${this.escapeHTML(task.title)}</div>
+        <div class="task-meta-cell">
+          ${cat ? `<span class="project-tag"><span class="project-dot" style="background: ${cat.color};"></span>${this.escapeHTML(cat.name)}</span>` : ''}
+          ${task.priority === 'high' ? '<span class="priority-flag high">URGENT</span>' : ''}
+          ${task.priority === 'medium' ? '<span class="priority-flag medium">MED</span>' : ''}
+          ${task.dueDate ? `<span class="date-readout">${task.dueDate.slice(5)}</span>` : ''}
+          ${task.subtasks && task.subtasks.length > 0 ? `<span class="subtask-readout">${task.subtasks.filter(s => s.done).length}/${task.subtasks.length}</span>` : ''}
         </div>
-        <button class="task-star-btn ${task.starred ? 'starred' : ''}" title="Star Task">
-          <svg viewBox="0 0 24 24" fill="${task.starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        <button class="star-action-btn ${task.starred ? 'starred' : ''}" title="Star (S)">
+          <svg viewBox="0 0 16 16" fill="${task.starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.3">
+            <polygon points="8 1.5 10 5.5 14.5 6 11 9.5 12 14 8 11.5 4 14 5 9.5 1.5 6 6 5.5 8 1.5"></polygon>
           </svg>
         </button>
       `;
 
-      card.addEventListener('click', () => this.selectTask(task.id));
-      card.querySelector('.task-checkbox-custom').addEventListener('click', (e) => this.toggleTaskCompleted(task.id, e));
-      card.querySelector('.task-star-btn').addEventListener('click', (e) => this.toggleTaskStarred(task.id, e));
+      row.addEventListener('click', () => {
+        this.selectTask(task.id, true);
+      });
 
-      this.taskListEl.appendChild(card);
+      row.querySelector('.check-trigger').addEventListener('click', (e) => this.toggleTaskCompleted(task.id, e));
+      row.querySelector('.star-action-btn').addEventListener('click', (e) => this.toggleTaskStarred(task.id, e));
+
+      this.taskListEl.appendChild(row);
     });
   }
 
@@ -576,16 +678,16 @@ class TodoApp {
     this.subtaskProgress.textContent = `${completedCount}/${subtasks.length}`;
 
     subtasks.forEach((sub) => {
-      const item = document.createElement('div');
-      item.className = `subtask-item ${sub.done ? 'done' : ''}`;
-      item.innerHTML = `
+      const node = document.createElement('div');
+      node.className = `subtask-node ${sub.done ? 'done' : ''}`;
+      node.innerHTML = `
         <input type="checkbox" ${sub.done ? 'checked' : ''} />
         <span>${this.escapeHTML(sub.title)}</span>
-        <button title="Delete subtask">✕</button>
+        <button title="Remove">✕</button>
       `;
-      item.querySelector('input').addEventListener('change', () => this.toggleSubtask(sub.id));
-      item.querySelector('button').addEventListener('click', () => this.deleteSubtask(sub.id));
-      this.detailSubtaskList.appendChild(item);
+      node.querySelector('input').addEventListener('change', () => this.toggleSubtask(sub.id));
+      node.querySelector('button').addEventListener('click', () => this.deleteSubtask(sub.id));
+      this.detailSubtaskList.appendChild(node);
     });
   }
 
@@ -605,11 +707,10 @@ class TodoApp {
     document.getElementById('count-starred').textContent = countStarred;
     document.getElementById('count-completed').textContent = countCompleted;
 
-    // Progress Bar
     const percent = totalAll > 0 ? Math.round((completedAll / totalAll) * 100) : 0;
     document.getElementById('progress-bar-fill').style.width = `${percent}%`;
-    document.getElementById('completion-rate').textContent = `${percent}% completed`;
-    document.getElementById('pending-count').textContent = `${leftAll} left`;
+    document.getElementById('completion-rate').textContent = `${percent}% Done`;
+    document.getElementById('pending-count').textContent = `${leftAll} Remaining`;
   }
 
   escapeHTML(str) {
@@ -620,7 +721,6 @@ class TodoApp {
   }
 }
 
-// Bootstrap
 window.addEventListener('DOMContentLoaded', () => {
-  new TodoApp();
+  new NodusApp();
 });
