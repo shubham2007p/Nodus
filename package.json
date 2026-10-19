@@ -1,0 +1,19 @@
+{
+  "name": "nodus-todo",
+  "version": "1.0.0",
+  "description": "Windows Desktop Todo Application with Fluent Mica styling",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "electron ."
+  },
+  "keywords": ["todo", "desktop", "electron", "windows", "fluent"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^41.2.0",
+    "vite": "^8.0.2"
+  }
+}
