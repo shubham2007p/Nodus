@@ -6,32 +6,24 @@
     <title>Nodus</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <!-- Frameless Desktop Titlebar -->
+    <!-- Top System Chrome Bar (Frameless Desktop) -->
     <header id="app-titlebar" class="window-titlebar">
       <div class="titlebar-drag-region">
-        <div class="app-brand">
-          <svg class="brand-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="2.5" y="2.5" width="11" height="11" rx="2.5" />
-            <path d="M5.5 8h5M8 5.5v5" stroke-linecap="round" />
-          </svg>
-          <span class="brand-title">NODUS</span>
-          <span class="version-label">v1.2</span>
+        <div class="app-identity">
+          <span class="product-mark">N</span>
+          <span class="product-wordmark">Nodus</span>
         </div>
-        <div class="titlebar-breadcrumbs">
-          <span class="breadcrumb-separator">/</span>
-          <span id="titlebar-current-view" class="breadcrumb-current">Inbox</span>
-        </div>
-        <div class="titlebar-status-chip">
-          <span class="status-indicator"></span>
-          <span>LOCAL</span>
+        <div class="workspace-scope">
+          <span class="scope-separator">/</span>
+          <span id="titlebar-current-view" class="scope-name">Inbox</span>
         </div>
       </div>
 
-      <!-- Native Windows Controls -->
+      <!-- Native Windows Window Controls -->
       <div class="window-controls">
         <button id="btn-minimize" class="win-btn win-btn-minimize" aria-label="Minimize">
           <svg viewBox="0 0 10 10"><path d="M1 5h8"/></svg>
@@ -49,70 +41,46 @@
       </div>
     </header>
 
-    <!-- Desktop Workspace Grid -->
+    <!-- Main Workspace Layout -->
     <div class="workspace-layout">
-      <!-- Minimalist Navigation Sidebar -->
+      <!-- Receding Sidebar -->
       <aside class="sidebar">
-        <div class="sidebar-section">
-          <div class="section-title">VIEWS</div>
+        <div class="sidebar-header">
+          <div class="workspace-selector">
+            <span class="workspace-avatar">W</span>
+            <div class="workspace-details">
+              <span class="workspace-name">Studio Workspace</span>
+              <span class="workspace-plan">Local Offline</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-group">
+          <div class="group-label">Views</div>
           <nav class="sidebar-nav">
             <button class="nav-btn active" data-filter="all">
-              <span class="nav-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-                  <rect x="2" y="2" width="5" height="5" rx="1"></rect>
-                  <rect x="9" y="2" width="5" height="5" rx="1"></rect>
-                  <rect x="2" y="9" width="5" height="5" rx="1"></rect>
-                  <rect x="9" y="9" width="5" height="5" rx="1"></rect>
-                </svg>
-              </span>
               <span class="nav-label">All Tasks</span>
               <span class="nav-count" id="count-all">0</span>
             </button>
-
             <button class="nav-btn" data-filter="today">
-              <span class="nav-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-                  <circle cx="8" cy="8" r="6"></circle>
-                  <path d="M8 4.5v3.5l2.5 1.5"></path>
-                </svg>
-              </span>
               <span class="nav-label">Today</span>
               <span class="nav-count" id="count-today">0</span>
             </button>
-
             <button class="nav-btn" data-filter="starred">
-              <span class="nav-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-                  <polygon points="8 1.5 10 5.5 14.5 6 11 9.5 12 14 8 11.5 4 14 5 9.5 1.5 6 6 5.5 8 1.5"></polygon>
-                </svg>
-              </span>
-              <span class="nav-label">Priority Focus</span>
+              <span class="nav-label">Focused</span>
               <span class="nav-count" id="count-starred">0</span>
             </button>
-
             <button class="nav-btn" data-filter="completed">
-              <span class="nav-icon">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3">
-                  <circle cx="8" cy="8" r="6"></circle>
-                  <path d="M5.5 8.2l1.8 1.8 3.5-3.5"></path>
-                </svg>
-              </span>
-              <span class="nav-label">Completed</span>
+              <span class="nav-label">Done</span>
               <span class="nav-count" id="count-completed">0</span>
             </button>
           </nav>
         </div>
 
-        <div class="sidebar-separator"></div>
-
-        <div class="sidebar-section">
-          <div class="section-title-row">
-            <span class="section-title">PROJECTS</span>
-            <button id="btn-add-category" class="mini-icon-btn" title="New Project" aria-label="Add project">
-              <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M6 2v8M2 6h8" stroke-linecap="round"/>
-              </svg>
-            </button>
+        <div class="sidebar-group">
+          <div class="group-label-row">
+            <span class="group-label">Projects</span>
+            <button id="btn-add-category" class="mini-text-btn" title="New project" aria-label="New project">+ New</button>
           </div>
           <div id="category-list" class="category-nav">
             <!-- Dynamic Category List -->
@@ -120,205 +88,197 @@
         </div>
 
         <div class="sidebar-footer">
-          <div class="system-stats">
-            <div class="stats-header">
-              <span id="completion-rate">0% Done</span>
-              <span id="pending-count">0 Remaining</span>
+          <div class="progress-block">
+            <div class="progress-labels">
+              <span id="completion-rate">0% completed</span>
+              <span id="pending-count">0 left</span>
             </div>
             <div class="meter-bar">
               <div id="progress-bar-fill" class="meter-fill" style="width: 0%"></div>
             </div>
           </div>
-          <div class="keyboard-legend">
-            <div class="legend-item"><kbd>J</kbd><kbd>K</kbd> <span>Navigate</span></div>
-            <div class="legend-item"><kbd>Space</kbd> <span>Toggle</span></div>
-            <div class="legend-item"><kbd>/</kbd> <span>Search</span></div>
+          <div class="shortcut-hints">
+            <span><kbd>J</kbd> <kbd>K</kbd> to move</span>
+            <span><kbd>Space</kbd> to mark done</span>
+            <span><kbd>/</kbd> to search</span>
           </div>
         </div>
       </aside>
 
-      <!-- Center Workbench -->
+      <!-- Center Workbench Canvas -->
       <main class="workbench">
-        <!-- Command Bar & Filters -->
-        <header class="workbench-header">
-          <div class="command-search-bar">
-            <svg class="search-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="7" cy="7" r="4.5" />
-              <path d="M10.5 10.5L14 14" stroke-linecap="round"/>
-            </svg>
-            <input type="text" id="search-input" placeholder="Search tasks, tags, or notes... (Press '/' to focus)" spellcheck="false" />
-            <kbd class="shortcut-pill">/</kbd>
+        <!-- Editorial Header Greeting -->
+        <header class="editorial-header">
+          <div class="editorial-title-row">
+            <h1 id="current-view-title" class="editorial-heading">Inbox</h1>
+            <span id="task-filter-counter" class="editorial-counter">0 tasks</span>
           </div>
+          <div class="header-actions">
+            <div class="search-field-wrapper">
+              <svg class="search-glyph" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+                <circle cx="7" cy="7" r="4.5" />
+                <path d="M10.5 10.5L14 14" stroke-linecap="round"/>
+              </svg>
+              <input type="text" id="search-input" placeholder="Search tasks, notes, or tags..." spellcheck="false" />
+              <kbd class="shortcut-pill">/</kbd>
+            </div>
 
-          <div class="workbench-filters">
-            <div class="custom-select-wrapper">
-              <select id="priority-filter" class="clean-select">
+            <div class="filter-controls">
+              <select id="priority-filter" class="taste-select">
                 <option value="all">Priority: All</option>
                 <option value="high">Urgent only</option>
                 <option value="medium">Medium only</option>
                 <option value="low">Low only</option>
               </select>
-            </div>
 
-            <div class="custom-select-wrapper">
-              <select id="sort-filter" class="clean-select">
-                <option value="created-desc">Sort: Newest</option>
-                <option value="created-asc">Sort: Oldest</option>
-                <option value="priority">Sort: Priority</option>
-                <option value="due-date">Sort: Due Date</option>
+              <select id="sort-filter" class="taste-select">
+                <option value="created-desc">Newest first</option>
+                <option value="created-asc">Oldest first</option>
+                <option value="priority">Priority</option>
+                <option value="due-date">Due date</option>
               </select>
             </div>
           </div>
         </header>
 
-        <!-- Fast Task Capture Input -->
-        <section class="task-capture-bar">
-          <div class="capture-prefix-indicator">
-            <span class="plus-icon">+</span>
-          </div>
+        <!-- Fast Task Capture Entry -->
+        <div class="task-entry-bar">
+          <span class="entry-indicator"></span>
           <input 
             type="text" 
             id="quick-input" 
-            class="capture-input" 
-            placeholder="Add task... (Use !high, !med, @Project for fast tags, Enter to create)" 
+            class="entry-input" 
+            placeholder="Add a task for today... (Press Enter to save, use !high or @Project)" 
             autocomplete="off" 
             spellcheck="false" 
           />
-          <div class="capture-actions">
-            <button type="button" id="toggle-quick-priority" class="tag-pill" data-priority="normal" title="Cycle priority">
+          <div class="entry-meta">
+            <button type="button" id="toggle-quick-priority" class="entry-pill" data-priority="normal" title="Cycle priority">
               <span class="priority-dot normal"></span>
               <span id="quick-priority-label">Normal</span>
             </button>
-            <input type="date" id="quick-due-date" class="date-pill" title="Due date" />
-            <select id="quick-category-select" class="project-pill" title="Select project">
+            <input type="date" id="quick-due-date" class="date-input-pill" title="Due date" />
+            <select id="quick-category-select" class="entry-pill" title="Assign project">
               <!-- Dynamically populated -->
             </select>
-            <button type="button" id="btn-quick-add" class="submit-action-btn">
-              <span>Return</span> ↵
-            </button>
+            <button type="button" id="btn-quick-add" class="add-submit-btn">Add</button>
           </div>
-        </section>
+        </div>
 
-        <!-- Task Content Area -->
-        <section class="tasks-viewport">
-          <div class="viewport-headline">
-            <div class="headline-left">
-              <h1 id="current-view-title" class="view-heading">Inbox</h1>
-              <span id="task-filter-counter" class="view-counter">0 items</span>
-            </div>
-            <div class="headline-right">
-              <button id="btn-clear-completed" class="subtle-link-btn">Clear completed</button>
-            </div>
+        <!-- Task Stream List -->
+        <section class="tasks-container">
+          <div class="stream-toolbar">
+            <span class="stream-meta">Active list</span>
+            <button id="btn-clear-completed" class="text-link-btn">Clear completed</button>
           </div>
 
-          <!-- Dynamic Task Cards List -->
           <div id="tasks-list" class="tasks-stream"></div>
 
-          <!-- Pure Minimalist Empty State -->
-          <div id="empty-state" class="clean-empty-state hidden">
-            <svg class="empty-glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-              <circle cx="12" cy="12" r="9" />
-              <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <div class="empty-title">All tasks completed</div>
-            <div class="empty-desc">Your workspace is clean. Press <kbd>N</kbd> or click above to capture a new task.</div>
+          <!-- Empty State (Anti-slop) -->
+          <div id="empty-state" class="empty-view hidden">
+            <div class="empty-headline">Everything is in order.</div>
+            <p class="empty-subtext">No tasks remaining in this view. Use the input above to capture your next focus.</p>
           </div>
         </section>
       </main>
 
-      <!-- Right Inspection / Detail Pane -->
-      <aside id="task-detail-pane" class="inspector-pane collapsed">
-        <div class="inspector-header">
-          <div class="inspector-tag">TASK INSPECTOR</div>
-          <button id="btn-close-detail" class="mini-icon-btn" title="Close (Esc)" aria-label="Close inspector">
+      <!-- Right Item Inspector -->
+      <aside id="task-detail-pane" class="task-inspector collapsed">
+        <div class="inspector-top">
+          <span class="inspector-title">Task Details</span>
+          <button id="btn-close-detail" class="icon-close-btn" title="Close inspector (Esc)" aria-label="Close">
             <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M2 2l8 8M10 2L2 10" stroke-linecap="round"/>
             </svg>
           </button>
         </div>
 
-        <div class="inspector-body">
-          <div class="inspector-block">
-            <input type="text" id="detail-title" class="title-editor" placeholder="Task name" spellcheck="false" />
+        <div class="inspector-content">
+          <div class="inspector-section">
+            <input type="text" id="detail-title" class="title-input-field" placeholder="Task title" spellcheck="false" />
           </div>
 
-          <div class="inspector-block grid-2">
-            <div class="field-unit">
-              <label class="unit-label">Priority</label>
-              <select id="detail-priority" class="field-select">
-                <option value="low">Low Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="high">Urgent Priority</option>
+          <div class="inspector-section meta-grid">
+            <div class="meta-field">
+              <label class="field-label">Priority</label>
+              <select id="detail-priority" class="inspector-select">
+                <option value="low">Low priority</option>
+                <option value="medium">Medium priority</option>
+                <option value="high">Urgent priority</option>
               </select>
             </div>
-            <div class="field-unit">
-              <label class="unit-label">Project</label>
-              <select id="detail-category" class="field-select">
+            <div class="meta-field">
+              <label class="field-label">Project</label>
+              <select id="detail-category" class="inspector-select">
                 <!-- Dynamically populated -->
               </select>
             </div>
           </div>
 
-          <div class="inspector-block">
-            <label class="unit-label">Due Date</label>
-            <input type="date" id="detail-due-date" class="field-input" />
+          <div class="inspector-section">
+            <label class="field-label">Due Date</label>
+            <input type="date" id="detail-due-date" class="inspector-date-input" />
           </div>
 
-          <div class="inspector-block">
-            <label class="unit-label">Notes & Specifications</label>
-            <textarea id="detail-notes" class="field-textarea" placeholder="Add specifications, links, or context..." rows="6"></textarea>
+          <div class="inspector-section">
+            <label class="field-label">Notes & Specifications</label>
+            <textarea id="detail-notes" class="inspector-textarea" placeholder="Add context, references, or next steps..." rows="6"></textarea>
           </div>
 
           <!-- Subtasks / Checklist -->
-          <div class="inspector-block">
-            <div class="subtask-row-header">
-              <label class="unit-label">Subtasks</label>
-              <span id="subtask-progress" class="subtask-metrics">0/0</span>
+          <div class="inspector-section">
+            <div class="subtask-header">
+              <label class="field-label">Checklist</label>
+              <span id="subtask-progress" class="subtask-count">0/0</span>
             </div>
             <div id="subtask-list" class="subtask-stream"></div>
-            <div class="subtask-create-row">
-              <input type="text" id="new-subtask-input" placeholder="Add a step and press Enter..." spellcheck="false" />
-              <button id="btn-add-subtask" class="subtask-add-btn">+</button>
+            <div class="subtask-add-row">
+              <input type="text" id="new-subtask-input" placeholder="Add step..." spellcheck="false" />
+              <button id="btn-add-subtask" class="subtask-submit-btn">+</button>
             </div>
           </div>
 
           <div class="inspector-footer">
-            <button id="btn-delete-task" class="danger-action-btn">
+            <button id="btn-delete-task" class="delete-btn">
               <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3">
                 <path d="M2 3.5h10M4.5 3.5V2a1 1 0 011-1h3a1 1 0 011 1v1.5M5.5 6v4.5M8.5 6v4.5M3 3.5l.7 8.5a1.5 1.5 0 001.5 1.5h3.6a1.5 1.5 0 001.5-1.5l.7-8.5" stroke-linecap="round"/>
               </svg>
               Delete Task
             </button>
-            <span id="detail-created-at" class="timestamp-readout">Created</span>
+            <span id="detail-created-at" class="created-timestamp">Created</span>
           </div>
         </div>
       </aside>
     </div>
 
-    <!-- Minimalist Project Creation Modal -->
-    <div id="category-modal" class="clean-modal-backdrop hidden">
-      <div class="clean-modal-card">
-        <div class="modal-top">
-          <span class="modal-heading">NEW PROJECT</span>
-          <button id="btn-close-cat-modal" class="mini-icon-btn">✕</button>
+    <!-- Category / Project Modal -->
+    <div id="category-modal" class="modal-backdrop hidden">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <span class="modal-title">New Project</span>
+          <button id="btn-close-cat-modal" class="icon-close-btn">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M2 2l8 8M10 2L2 10" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
-        <div class="modal-contents">
-          <label class="unit-label">Project Name</label>
-          <input type="text" id="new-cat-name" class="field-input" placeholder="e.g. Core Architecture, Refactoring" autofocus />
+        <div class="modal-body">
+          <label class="field-label">Project Name</label>
+          <input type="text" id="new-cat-name" class="modal-text-input" placeholder="e.g. Design System, Launch" autofocus />
 
-          <label class="unit-label" style="margin-top: 16px;">Color Identifier</label>
-          <div class="color-palette-rack">
-            <button type="button" class="swatch-btn active" data-color="#71717a" style="background: #71717a;" title="Zinc"></button>
-            <button type="button" class="swatch-btn" data-color="#3b82f6" style="background: #3b82f6;" title="Blue"></button>
-            <button type="button" class="swatch-btn" data-color="#10b981" style="background: #10b981;" title="Emerald"></button>
-            <button type="button" class="swatch-btn" data-color="#f59e0b" style="background: #f59e0b;" title="Amber"></button>
-            <button type="button" class="swatch-btn" data-color="#ef4444" style="background: #ef4444;" title="Crimson"></button>
-            <button type="button" class="swatch-btn" data-color="#8b5cf6" style="background: #8b5cf6;" title="Violet"></button>
+          <label class="field-label" style="margin-top: 16px;">Color Identifier</label>
+          <div class="color-swatches">
+            <button type="button" class="swatch-btn active" data-color="#1b6e66" style="background: #1b6e66;" title="Deep Forest"></button>
+            <button type="button" class="swatch-btn" data-color="#1b6e66" style="background: #1b6e66;" title="Studio Blue"></button>
+            <button type="button" class="swatch-btn" data-color="#6b7280" style="background: #6b7280;" title="Ink Violet"></button>
+            <button type="button" class="swatch-btn" data-color="#d97706" style="background: #d97706;" title="Warm Amber"></button>
+            <button type="button" class="swatch-btn" data-color="#dc2626" style="background: #dc2626;" title="Crimson"></button>
+            <button type="button" class="swatch-btn" data-color="#4b5563" style="background: #4b5563;" title="Neutral Slate"></button>
           </div>
         </div>
-        <div class="modal-bottom">
-          <button id="btn-cancel-cat" class="subtle-link-btn">Cancel</button>
-          <button id="btn-save-cat" class="solid-action-btn">Create Project</button>
+        <div class="modal-actions">
+          <button id="btn-cancel-cat" class="text-link-btn">Cancel</button>
+          <button id="btn-save-cat" class="modal-primary-btn">Create Project</button>
         </div>
       </div>
     </div>
